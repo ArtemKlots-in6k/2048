@@ -2,11 +2,11 @@
  * Created by employee on 7/19/16.
  */
 public interface Movable {
-    void flickRight();
+    void swipeRight();
 
-    void flickLeft();
+    void swipeLeft();
 
-    void flickUp();
+    void swipeUp();
 
-    void flickDown();
+    void swipeDown();
 }

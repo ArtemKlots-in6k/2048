@@ -21,7 +21,6 @@ public class GameBoard implements Movable {
         return cells;
     }
 
-
     private void generateStartBoard() {
         for (int i = 0; i < 2; i++) {
             generateRandomCell();
@@ -48,14 +47,7 @@ public class GameBoard implements Movable {
 
         }
         //// TODO: 7/19/16 else end of game
-
     }
-
-//    private void nextStep(){
-//        if (isEmptyCellsOnBoard()){
-//
-//        }
-//    }
 
     public boolean isEmptyCellsOnBoard() {
         for (int[] row : cells) {
@@ -73,41 +65,49 @@ public class GameBoard implements Movable {
     }
 
     @Override
-    public void flickRight() {
+    public void swipeRight() {
         System.out.println(Arrays.deepToString(cells));
-        for (int i = 0; i < 3; i++) {
-            moveCellToRight();
+        moveToRightSide();
+        for (int i = 0; i <= 3; i++) {
+            plusIfPossible(i);
+        }
+        moveToRightSide();
+    }
+
+    private void moveToRightSide() {
+        for (int i = 0; i < 4; i++) {
+            for (int y = 0; y < 4; y++) {
+                for (int x = 0; x < 3; x++) {
+
+                    if (isEmptyNextCell(getRow(y), x)) {
+                        moveCellToRight(y, x);
+                    }
+
+                }
+            }
         }
     }
 
-    private void moveCellToRight() {
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 3; x++) {
-                if (isNextRightCellEmpty(getRow(y), x)) {
-                    transportCellsToRight(y, x);
-//                    System.out.println(Arrays.deepToString(cells));
-                } else {
-                    plusIfPossible(y, x);
-                }
+    private void plusIfPossible(int row) {
+        for (int i = 3; i > 0; i--) {
+            if (cells[row][i] == cells[row][i - 1]) {
+                cells[row][i] += cells[row][i - 1];
+                cells[row][i - 1] = 0;
             }
+//            System.out.println(Arrays.deepToString(cells));
         }
 //        System.out.println();
     }
 
-    private void plusIfPossible(int y, int x) {
-        if (cells[y][x] == cells[y][x + 1]) {
-            transportCellsToRight(y, x);
-        }
+    private boolean isEmptyNextCell(int[] row, int x) {
+        return row[x + 1] == 0;
     }
 
-    private void transportCellsToRight(int y, int x) {
-        cells[y][x + 1] += cells[y][x];
+    private void moveCellToRight(int y, int x) {
+        cells[y][x + 1] = cells[y][x];
         cells[y][x] = 0;
     }
 
-    private boolean isNextRightCellEmpty(int[] row, int x) {
-        return isEmptyCell(row[x + 1]);
-    }
 
     private int[] getRow(int rowNumber) {
         int[] row = new int[BOARD_SIZE];
@@ -116,17 +116,38 @@ public class GameBoard implements Movable {
     }
 
     @Override
-    public void flickLeft() {
+    public void swipeLeft() {
+        System.out.println(Arrays.deepToString(cells));
+        for (int i = 0; i < 4; i++) {
+//            moveCellToLeft();
+        }
+    }
+/*
+    private void moveCellToLeft() {
+        for (int y = 0; y < 4; y++) {
+            for (int x = 4; x > 0; x--) {
+//                if (isNextLeftCellEmpty(getRow(y), x)) {
+//                    transportCellsToLeft(y, x);
+//                }
+                ;
+            }
+            System.out.println();
+        }
+    }
+
+    private void transportCellsToLeft(int y, int x) {
+        cells[y][x + 1] += cells[y][x];
+        cells[y][x] = 0;
+    }
+*/
+
+    @Override
+    public void swipeUp() {
 
     }
 
     @Override
-    public void flickUp() {
-
-    }
-
-    @Override
-    public void flickDown() {
+    public void swipeDown() {
 
     }
 
