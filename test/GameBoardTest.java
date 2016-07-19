@@ -44,12 +44,11 @@ public class GameBoardTest {
         assertThat(gameBoard.getCells(), is(new int[][]{{0, 0, 0, 2}, {0, 0, 0, 4}, {0, 0, 2, 4}, {0, 0, 4, 4}}));
     }
 
-    @Ignore
     @Test
     public void moveLeft() throws Exception {
         gameBoard = fixedGameBoard;
         gameBoard.swipeLeft();
-        assertThat(gameBoard.getCells(), is(new int[][]{{2, 0, 0, 0}, {4, 0, 0, 0}, {2, 4, 0, 0}, {8, 0, 0, 0}}));
+        assertThat(gameBoard.getCells(), is(new int[][]{{2, 0, 0, 0}, {4, 0, 0, 0}, {4, 2, 0, 0}, {4, 4, 0, 0}}));
     }
 }
 

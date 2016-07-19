@@ -66,10 +66,9 @@ public class GameBoard implements Movable {
 
     @Override
     public void swipeRight() {
-        System.out.println(Arrays.deepToString(cells));
         moveToRightSide();
         for (int i = 0; i <= 3; i++) {
-            plusIfPossible(i);
+            plusToRightIfPossible(i);
         }
         moveToRightSide();
     }
@@ -88,7 +87,7 @@ public class GameBoard implements Movable {
         }
     }
 
-    private void plusIfPossible(int row) {
+    private void plusToRightIfPossible(int row) {
         for (int i = 3; i > 0; i--) {
             if (cells[row][i] == cells[row][i - 1]) {
                 cells[row][i] += cells[row][i - 1];
@@ -117,29 +116,49 @@ public class GameBoard implements Movable {
 
     @Override
     public void swipeLeft() {
-        System.out.println(Arrays.deepToString(cells));
-        for (int i = 0; i < 4; i++) {
-//            moveCellToLeft();
+        moveToLeftSide();
+        for (int i = 0; i <= 3; i++) {
+            plusToLeftIfPossible(i);
         }
+        moveToLeftSide();
     }
-/*
-    private void moveCellToLeft() {
-        for (int y = 0; y < 4; y++) {
-            for (int x = 4; x > 0; x--) {
-//                if (isNextLeftCellEmpty(getRow(y), x)) {
-//                    transportCellsToLeft(y, x);
-//                }
-                ;
+
+    private void plusToLeftIfPossible(int row) {
+        for (int i = 0; i < 3; i++) {
+            if (cells[row][i] == cells[row][i + 1]) {
+                cells[row][i] += cells[row][i + 1];
+                cells[row][i + 1] = 0;
             }
-            System.out.println();
+//            System.out.println(Arrays.deepToString(cells));
+        }
+//        System.out.println();
+    }
+
+    private void moveToLeftSide() {
+        for (int i = 0; i < 4; i++) {
+            for (int y = 0; y < 4; y++) {
+                for (int x = 3; x > 0; x--) {
+
+                    if (isEmptyPreviousCell(getRow(y), x)) {
+                        moveCellToLeft(y, x);
+                    }
+
+                }
+//                System.out.print(Arrays.toString(getRow(y)));
+            }
+//            System.out.println();
         }
     }
 
-    private void transportCellsToLeft(int y, int x) {
-        cells[y][x + 1] += cells[y][x];
+    private void moveCellToLeft(int y, int x) {
+        cells[y][x - 1] = cells[y][x];
         cells[y][x] = 0;
     }
-*/
+
+    private boolean isEmptyPreviousCell(int[] row, int x) {
+        return row[x - 1] == 0;
+    }
+
 
     @Override
     public void swipeUp() {
