@@ -17,27 +17,29 @@ public class GameTest {
 
     @Test
     public void constructorTest() throws Exception {
-        assertThat(game.getBoard(), is(new int[4][4]));
+        assertThat(game.getCells(), is(new int[4][4]));
     }
 
     @Test
     public void startGame() throws Exception {
         game.start();
-        assertThat(isEmptyBoard(game.getBoard()), is(true));
+        assertThat(isTwoCellsOnStart(game.getCells()), is(true));
     }
 
-    public boolean isEmptyBoard(int[][] board) {
+    private boolean isTwoCellsOnStart(int[][] board) {
+        int counter = 0;
         for (int[] row : board) {
             for (int cell : row) {
-                if (!isEmptyCell(cell))
-                    return false;
+                if (cell > 0)
+                    counter++;
             }
         }
-        return true;
+        return counter == 2;
     }
 
     public boolean isEmptyCell(int cell) {
         return cell == 0;
     }
 }
+
 
