@@ -9,8 +9,8 @@ import java.util.Random;
  */
 public class GameBoard implements Movable {
     private static final int BOARD_SIZE = 4;
-    //    private int[][] cells;
     private List<Cell> cells;
+    Command command;
 
     public GameBoard() {
         cells = new ArrayList<>();
@@ -85,6 +85,7 @@ public class GameBoard implements Movable {
 
     @Override
     public void swipeRight() {
+        command = Command.D;
         moveToRightSide();
         for (int y = 0; y <= BOARD_SIZE - 1; y++) {
             plusToRightIfPossible(y);
@@ -98,7 +99,7 @@ public class GameBoard implements Movable {
                 for (int x = 0; x < BOARD_SIZE - 1; x++) {
 
                     if (isEmptyNextCell(x, y)) {
-                        moveCellToRight(y, x);
+                        moveCellInHorizontalDirection(y, x, command);
                     }
 
                 }
@@ -118,20 +119,9 @@ public class GameBoard implements Movable {
         return getCellByPosition(x + 1, y).isEmpty();
     }
 
-    private void moveCellToRight(int y, int x) {
-        getCellByPosition(x + 1, y).setValue(getCellByPosition(x, y).getValue());
-        getCellByPosition(x, y).setValue(0);
-    }
-
-
-//    private int[] getRow(int rowNumber) {
-//        int[] row = new int[BOARD_SIZE];
-//        System.arraycopy(cells[rowNumber], 0, row, 0, BOARD_SIZE);
-//        return row;
-//    }
-
     @Override
     public void swipeLeft() {
+        command = Command.A;
         moveToLeftSide();
         for (int i = 0; i <= 3; i++) {
             plusToLeftIfPossible(i);
@@ -153,7 +143,7 @@ public class GameBoard implements Movable {
                 for (int x = 3; x > 0; x--) {
 
                     if (isEmptyPreviousCell(x, y)) {
-                        moveCellToLeft(y, x);
+                        moveCellInHorizontalDirection(y, x, command);
                     }
 
                 }
@@ -161,15 +151,9 @@ public class GameBoard implements Movable {
         }
     }
 
-    private void moveCellToLeft(int y, int x) {
-        getCellByPosition(x - 1, y).setValue(getCellByPosition(x, y).getValue());
-        getCellByPosition(x, y).setValue(0);
-    }
-
     private boolean isEmptyPreviousCell(int x, int y) {
         return getCellByPosition(x - 1, y).isEmpty();
     }
-
 
     @Override
     public void swipeUp() {
@@ -202,6 +186,19 @@ public class GameBoard implements Movable {
             }
         }
         return result;
+    }
+
+    private void moveCellInHorizontalDirection(int y, int x, Command command) {
+        int directionIndex = 0;
+        switch (command) {
+            case D:
+                directionIndex = 1;
+                break;
+            case A:
+                directionIndex = -1;
+        }
+        getCellByPosition(x + directionIndex, y).setValue(getCellByPosition(x, y).getValue());
+        getCellByPosition(x, y).setValue(0);
     }
 }
 
