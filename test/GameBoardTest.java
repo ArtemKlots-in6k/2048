@@ -6,7 +6,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Created by employee on 7/19/16.
+ * Created by Artem Klots on 7/19/16.
  */
 public class GameBoardTest {
     private GameBoard gameBoard;
@@ -25,7 +25,7 @@ public class GameBoardTest {
     // TODO: 7/20/16 переделать генератор через интерфесы
 //    @Ignore
 //    @Test
-//    public void isGeneratedTwooCellsOnStart() throws Exception {
+//    public void isGeneratedTwoCellsOnStart() throws Exception {
 //        assertThat(isTwoCellsOnStart(gameBoard.getCells()), is(true));
 //    }
 

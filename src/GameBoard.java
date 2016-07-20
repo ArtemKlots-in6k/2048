@@ -77,9 +77,10 @@ public class GameBoard implements Movable {
 
     private boolean isEmptyCellsOnBoard() {
         for (Cell cell : cells) {
-            return cell.isEmpty();
+            if (!cell.isEmpty())
+                return false;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -131,47 +132,42 @@ public class GameBoard implements Movable {
 
     @Override
     public void swipeLeft() {
-//        moveToLeftSide();
-//        for (int i = 0; i <= 3; i++) {
-//            plusToLeftIfPossible(i);
-//        }
-//        moveToLeftSide();
-//    }
-//
-//    private void plusToLeftIfPossible(int row) {
-//        for (int i = 0; i < 3; i++) {
-//            if (cells[row][i] == cells[row][i + 1]) {
-//                cells[row][i] += cells[row][i + 1];
-//                cells[row][i + 1] = 0;
-//            }
-////            System.out.println(Arrays.deepToString(cells));
-//        }
-////        System.out.println();
-//    }
-//
-//    private void moveToLeftSide() {
-//        for (int i = 0; i < 4; i++) {
-//            for (int y = 0; y < BOARD_SIZE; y++) {
-//                for (int x = 3; x > 0; x--) {
-//
-//                    if (isEmptyPreviousCell(getRow(y), x)) {
-//                        moveCellToLeft(y, x);
-//                    }
-//
-//                }
-////                System.out.print(Arrays.toString(getRow(y)));
-//            }
-////            System.out.println();
-//        }
-//    }
-//
-//    private void moveCellToLeft(int y, int x) {
-//        cells[y][x - 1] = cells[y][x];
-//        cells[y][x] = 0;
+        moveToLeftSide();
+        for (int i = 0; i <= 3; i++) {
+            plusToLeftIfPossible(i);
+        }
+        moveToLeftSide();
     }
 
-    private boolean isEmptyPreviousCell(int[] row, int x) {
-        return row[x - 1] == 0;
+    private void plusToLeftIfPossible(int y) {
+        for (int x = 0; x < 3; x++) {
+            if (getCellByPosition(x, y).equals(getCellByPosition(x + 1, y))) {
+                getCellByPosition(x, y).joinNextCells(getCellByPosition(x + 1, y));
+            }
+        }
+    }
+
+    private void moveToLeftSide() {
+        for (int i = 0; i < 4; i++) {
+            for (int y = 0; y < BOARD_SIZE; y++) {
+                for (int x = 3; x > 0; x--) {
+
+                    if (isEmptyPreviousCell(x, y)) {
+                        moveCellToLeft(y, x);
+                    }
+
+                }
+            }
+        }
+    }
+
+    private void moveCellToLeft(int y, int x) {
+        getCellByPosition(x - 1, y).setValue(getCellByPosition(x, y).getValue());
+        getCellByPosition(x, y).setValue(0);
+    }
+
+    private boolean isEmptyPreviousCell(int x, int y) {
+        return getCellByPosition(x - 1, y).isEmpty();
     }
 
 
