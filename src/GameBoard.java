@@ -1,6 +1,7 @@
+import com.sun.org.apache.xml.internal.utils.WrongParserException;
+
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -10,7 +11,7 @@ import java.util.Random;
 public class GameBoard implements Movable {
     private static final int BOARD_SIZE = 4;
     private List<Cell> cells;
-    Command command;
+    private Direction direction;
 
     public GameBoard() {
         cells = new ArrayList<>();
@@ -18,31 +19,9 @@ public class GameBoard implements Movable {
         generateStartBoard();
     }
 
-    private void generateEmptyBoard() {
-        for (int y = 0; y < BOARD_SIZE; y++) {
-            for (int x = 0; x < BOARD_SIZE; x++) {
-                cells.add(new Cell(new Point(x, y), 0));
-            }
-        }
-    }
-
-    public GameBoard(int[][] board) {
-        cells = new ArrayList<>();
-        for (int y = 0; y < BOARD_SIZE; y++) {
-            for (int x = 0; x < BOARD_SIZE; x++) {
-                cells.add(new Cell(new Point(x, y), board[y][x]));
-            }
-        }
-    }
-
-    List<Cell> getCells() {
-        return cells;
-    }
-
     private void generateStartBoard() {
-        for (int i = 0; i < 2; i++) {
-            generateRandomCell();
-        }
+        generateRandomCell();
+        generateRandomCell();
     }
 
     private void generateRandomCell() {
@@ -67,27 +46,30 @@ public class GameBoard implements Movable {
         //// TODO: 7/19/16 else end of game
     }
 
-    private Cell getCellByPosition(int x, int y) {
-        for (Cell cell : cells) {
-            if (cell.getPosition().equals(new Point(x, y)))
-                return cell;
+    private void generateEmptyBoard() {
+        for (int y = 0; y < BOARD_SIZE; y++) {
+            for (int x = 0; x < BOARD_SIZE; x++) {
+                cells.add(new Cell(new Point(x, y), 0));
+            }
         }
-        throw new ArrayIndexOutOfBoundsException();
     }
 
-    private boolean isEmptyCellsOnBoard() {
-        for (Cell cell : cells) {
-            if (!cell.isEmpty())
-                return false;
+    public GameBoard(int[][] board) {
+        cells = new ArrayList<>();
+        for (int y = 0; y < BOARD_SIZE; y++) {
+            for (int x = 0; x < BOARD_SIZE; x++) {
+                cells.add(new Cell(new Point(x, y), board[y][x]));
+            }
         }
-        return true;
     }
+
+
 
     @Override
     public void swipeRight() {
-        command = Command.D;
+        direction = Direction.Right;
         moveToRightSide();
-        for (int y = 0; y <= BOARD_SIZE - 1; y++) {
+        for (int y = 0; y < BOARD_SIZE; y++) {
             plusToRightIfPossible(y);
         }
         moveToRightSide();
@@ -98,8 +80,8 @@ public class GameBoard implements Movable {
             for (int y = 0; y < BOARD_SIZE; y++) {
                 for (int x = 0; x < BOARD_SIZE - 1; x++) {
 
-                    if (isEmptyNextCell(x, y)) {
-                        moveCellInHorizontalDirection(y, x, command);
+                    if (isEmptyCellInHorizontalDirection(x, y, direction)) {
+                        moveCellInHorizontalDirection(y, x, direction);
                     }
 
                 }
@@ -109,21 +91,15 @@ public class GameBoard implements Movable {
 
     private void plusToRightIfPossible(int y) {
         for (int x = BOARD_SIZE - 1; x > 0; x--) {
-            if (getCellByPosition(x, y).equals(getCellByPosition(x - 1, y))) {
-                getCellByPosition(x, y).joinNextCells(getCellByPosition(x - 1, y));
-            }
+            joinCellInHorizontalDirection(x, y, direction);
         }
-    }
-
-    private boolean isEmptyNextCell(int x, int y) {
-        return getCellByPosition(x + 1, y).isEmpty();
     }
 
     @Override
     public void swipeLeft() {
-        command = Command.A;
+        direction = Direction.Left;
         moveToLeftSide();
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             plusToLeftIfPossible(i);
         }
         moveToLeftSide();
@@ -131,28 +107,20 @@ public class GameBoard implements Movable {
 
     private void plusToLeftIfPossible(int y) {
         for (int x = 0; x < 3; x++) {
-            if (getCellByPosition(x, y).equals(getCellByPosition(x + 1, y))) {
-                getCellByPosition(x, y).joinNextCells(getCellByPosition(x + 1, y));
-            }
+            joinCellInHorizontalDirection(x, y, direction);
         }
     }
 
+    // TODO: 7/20/16 По возможности исправить вложености. (создать список с непустыми елементами и сдвинуть вправо)
     private void moveToLeftSide() {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             for (int y = 0; y < BOARD_SIZE; y++) {
-                for (int x = 3; x > 0; x--) {
-
-                    if (isEmptyPreviousCell(x, y)) {
-                        moveCellInHorizontalDirection(y, x, command);
-                    }
-
+                for (int x = BOARD_SIZE - 1; x > 0; x--) {
+                    if (isEmptyCellInHorizontalDirection(x, y, direction))
+                        moveCellInHorizontalDirection(y, x, direction);
                 }
             }
         }
-    }
-
-    private boolean isEmptyPreviousCell(int x, int y) {
-        return getCellByPosition(x - 1, y).isEmpty();
     }
 
     @Override
@@ -182,23 +150,65 @@ public class GameBoard implements Movable {
         for (int x = 0; x < BOARD_SIZE; x++) {
             for (int y = 0; y < BOARD_SIZE; y++) {
                 result[y][x] = getCellByPosition(x, y).getValue();
-//                System.out.println(getCellByPosition(x, y).getValue());
             }
         }
         return result;
     }
 
-    private void moveCellInHorizontalDirection(int y, int x, Command command) {
-        int directionIndex = 0;
-        switch (command) {
-            case D:
-                directionIndex = 1;
-                break;
-            case A:
-                directionIndex = -1;
-        }
+    private boolean isEmptyCellInHorizontalDirection(int x, int y, Direction direction) {
+        int directionIndex = getDirectionIndex(direction);
+        return getCellByPosition(x + directionIndex, y).isEmpty();
+    }
+
+    private void moveCellInHorizontalDirection(int y, int x, Direction direction) {
+        int directionIndex = getDirectionIndex(direction);
         getCellByPosition(x + directionIndex, y).setValue(getCellByPosition(x, y).getValue());
         getCellByPosition(x, y).setValue(0);
+    }
+
+    private int getDirectionIndex(Direction direction) {
+        switch (direction) {
+            case Right:
+                return 1;
+            case Left:
+                return -1;
+        }
+        throw new WrongParserException("Wrong comand here");
+    }
+
+    private void joinCellInHorizontalDirection(int x, int y, Direction direction) {
+        int directionIndex = 0;
+        switch (direction) {
+            case Right:
+                directionIndex = -1;
+                break;
+            case Left:
+                directionIndex = 1;
+                break;
+        }
+        if (getCellByPosition(x, y).equals(getCellByPosition(x + directionIndex, y))) {
+            getCellByPosition(x, y).joinNextCells(getCellByPosition(x + directionIndex, y));
+        }
+    }
+
+    private Cell getCellByPosition(int x, int y) {
+        for (Cell cell : cells) {
+            if (cell.getPosition().equals(new Point(x, y)))
+                return cell;
+        }
+        throw new ArrayIndexOutOfBoundsException();
+    }
+
+    private boolean isEmptyCellsOnBoard() {
+        for (Cell cell : cells) {
+            if (!cell.isEmpty())
+                return false;
+        }
+        return true;
+    }
+
+    List<Cell> getCells() {
+        return cells;
     }
 }
 
