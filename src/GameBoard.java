@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  * Created by Artem Klots on 7/19/16.
  */
-public class GameBoard implements Movable {
+public class GameBoard implements Movable, ValueGenerator {
     private static final int BOARD_SIZE = 4;
     private List<Cell> cells;
     private Direction direction;
@@ -20,30 +20,9 @@ public class GameBoard implements Movable {
     }
 
     private void generateStartBoard() {
-        generateRandomCell();
-        generateRandomCell();
-    }
-
-    private void generateRandomCell() {
-        if (isEmptyCellsOnBoard()) {
-            boolean isSuccessful = false;
-
-            while (!isSuccessful) {
-                Random randomGenerator = new Random();
-                int x = randomGenerator.nextInt(BOARD_SIZE);
-                int y = randomGenerator.nextInt(BOARD_SIZE);
-                if (getCellByPosition(x, y).isEmpty()) {
-                    if (randomGenerator.nextBoolean()) {
-                        getCellByPosition(x, y).setValue(2);
-                    } else {
-                        getCellByPosition(x, y).setValue(4);
-                    }
-                    isSuccessful = true;
-                }
-            }
-
-        }
-        //// TODO: 7/19/16 else end of game
+        // TODO: 7/20/16 Починить!!
+//        generateRandomValue();
+//        generateRandomValue();
     }
 
     private void generateEmptyBoard() {
@@ -62,7 +41,6 @@ public class GameBoard implements Movable {
             }
         }
     }
-
 
 
     @Override
@@ -145,6 +123,28 @@ public class GameBoard implements Movable {
 
     }
 
+    public List<Cell> selectEmptyCells(List<Cell> cells) {
+        List<Cell> emptyCells = new ArrayList<>();
+        for (Cell cell : cells) {
+            if (!cell.isEmpty())
+                emptyCells.add(cell);
+        }
+        return emptyCells;
+    }
+
+    @Override
+    public void generateRandomValue() {
+        Random randomGenerator = new Random();
+
+        List<Cell> emptyCells = this.selectEmptyCells(cells);
+        Cell randomEmptyCell = emptyCells.get(randomGenerator.nextInt(emptyCells.size() - 1));
+        if (randomGenerator.nextBoolean()) {
+            randomEmptyCell.setValue(2);
+        } else {
+            randomEmptyCell.setValue(4);
+        }
+    }
+
     public int[][] getCellsToArray() {
         int[][] result = new int[BOARD_SIZE][BOARD_SIZE];
         for (int x = 0; x < BOARD_SIZE; x++) {
@@ -178,6 +178,7 @@ public class GameBoard implements Movable {
 
     private void joinCellInHorizontalDirection(int x, int y, Direction direction) {
         int directionIndex = 0;
+        // TODO: 7/20/16 Запихнуть команду в мапу, тем самым убрав Switch
         switch (direction) {
             case Right:
                 directionIndex = -1;

@@ -6,6 +6,7 @@ import java.awt.*;
 public class Cell {
     private String color;
     private int value;
+    // TODO: 7/20/16 Point использует графическую библиотеку. Заменить Point на свой класс
     private Point position;
 
     public Cell(Point position, int value) {
