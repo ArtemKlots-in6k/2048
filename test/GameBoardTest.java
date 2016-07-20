@@ -91,6 +91,23 @@ public class GameBoardTest {
                 {4, 4, 4, 2}
         }));
     }
+
+    @Test
+    public void differentNumbersJoining() throws Exception {
+        gameBoard = new GameBoard(new int[][]{
+                {0, 4, 8, 0},
+                {0, 16, 8, 16},
+                {0, 8, 8, 8},
+                {64, 0, 0, 64},
+        });
+        gameBoard.swipeRight();
+        assertThat(gameBoard.getCellsToArray(), is(new int[][]{
+                {0, 0, 4, 8},
+                {0, 16, 8, 16},
+                {0, 0, 8, 16},
+                {0, 0, 0, 128}
+        }));
+    }
 }
 
 
